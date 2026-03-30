@@ -63,7 +63,7 @@ class Product(models.Model):
 
     description = models.TextField(blank=True, verbose_name=_('Описание'))
     attributes = models.JSONField(default=dict, blank=True, verbose_name=_('Атрибуты'))
-    sku = models.CharField(max_length=50, blank=True, unique=True, verbose_name=_('Артикул'))
+    sku = models.CharField(max_length=50, blank=True, null=True, verbose_name=_('Артикул'))
     brand = models.CharField(max_length=100, blank=True, verbose_name=_('Бренд'))
     is_active = models.BooleanField(default=True, verbose_name=_('Активен'))
     created_at = models.DateTimeField(auto_now_add=True)
