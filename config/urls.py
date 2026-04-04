@@ -22,6 +22,16 @@ from rest_framework import permissions
 from django.views.generic import RedirectView
 from django.conf import settings
 from django.conf.urls.static import static
+from rest_framework.routers import DefaultRouter
+from apps.products.admin_views import (AdminSupplierViewSet, AdminProductViewSet, CategoryViewSet)
+from apps.orders.admin_views import AdminOrderViewSet
+
+
+admin_router = DefaultRouter()
+admin_router.register(r'suppliers', AdminSupplierViewSet, basename='admin-suppliers')
+admin_router.register(r'products', AdminProductViewSet, basename='admin-products')
+admin_router.register(r'categories', CategoryViewSet, basename='categories')
+admin_router.register(r'orders', AdminOrderViewSet, basename='admin-orders')
 
 schema_view = get_schema_view(
     openapi.Info(
@@ -39,6 +49,7 @@ urlpatterns = [
     path('api/v1/auth/', include('apps.users.urls')),
     path('api/v1/', include('apps.products.urls')),
     path('api/v1/', include('apps.orders.urls')),
+    path('api/v1/admin/', include(admin_router.urls)),
     
     # Swagger документация
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger'),

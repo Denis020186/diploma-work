@@ -86,6 +86,7 @@ class Order(models.Model):
         ('delivered', _('Доставлен')),
         ('cancelled', _('Отменён')),
     )
+    STATUS_CHOICES_DICT = dict(STATUS_CHOICES)
 
     user = models.ForeignKey(
         User,
