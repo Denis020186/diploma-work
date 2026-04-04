@@ -50,6 +50,7 @@ urlpatterns = [
     path('api/v1/', include('apps.products.urls')),
     path('api/v1/', include('apps.orders.urls')),
     path('api/v1/admin/', include(admin_router.urls)),
+    path('api/v1/import-export/', include('apps.import_export.urls')),
     
     # Swagger документация
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='swagger'),

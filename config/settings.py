@@ -134,3 +134,42 @@ ADMIN_EMAIL = 'admin@example.com'
 
 # Отключаем редирект на страницу логина
 LOGIN_URL = None
+
+# НАСТРОЙКИ CELERY
+
+# Брокер сообщений (Redis)
+CELERY_BROKER_URL = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = os.getenv('REDIS_URL', 'redis://localhost:6379/0')
+
+# Настройки Celery
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_TASK_SOFT_TIME_LIMIT = 20 * 60
+
+# Импорт задач при старте
+CELERY_IMPORTS = (
+    'apps.import_export.tasks',
+    'apps.orders.tasks',
+    'apps.products.tasks',
+)
+
+# Настройки очередей
+CELERY_TASK_QUEUES = {
+    'default': {'exchange': 'default', 'routing_key': 'default'},
+    'email': {'exchange': 'email', 'routing_key': 'email'},
+    'import': {'exchange': 'import', 'routing_key': 'import'},
+    'export': {'exchange': 'export', 'routing_key': 'export'},
+}
+
+# Маршрутизация задач по очередям
+CELERY_TASK_ROUTES = {
+    'apps.import_export.tasks.send_email_task': {'queue': 'email'},
+    'apps.import_export.tasks.do_import': {'queue': 'import'},
+    'apps.import_export.tasks.do_export': {'queue': 'export'},
+    'apps.orders.tasks.process_order': {'queue': 'default'},
+    'apps.products.tasks.update_prices': {'queue': 'default'},
+}
