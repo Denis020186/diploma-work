@@ -57,7 +57,7 @@ ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -95,23 +95,16 @@ USE_I18N = True
 USE_TZ = True
 
 # Статика и медиа
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_URL = 'media/'
+STATICFILES_DIRS = [BASE_DIR / 'static'] 
+
+MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # REST Framework (настройка)
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 20,
-}
-
-# Модель пользователя
-AUTH_USER_MODEL = 'users.User'
-
-#
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
@@ -123,7 +116,21 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 20,
 }
 
+
+# Модель пользователя
+AUTH_USER_MODEL = 'users.User'
+
+
+
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
 }
+
+# Email настройки
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'  # Вывод в консоль
+DEFAULT_FROM_EMAIL = 'noreply@purchase-auto.ru'
+ADMIN_EMAIL = 'admin@example.com'
+
+# Отключаем редирект на страницу логина
+LOGIN_URL = None

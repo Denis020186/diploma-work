@@ -6,6 +6,8 @@ from django.db import transaction
 from .models import Cart, CartItem, Order, OrderItem
 from .serializers import CartSerializer, CartItemSerializer, OrderSerializer, OrderCreateSerializer
 from apps.products.models import SupplierProduct
+from apps.import_export.tasks import send_email_task
+from django.conf import settings
 
 
 class CartViewSet(viewsets.GenericViewSet):
@@ -86,6 +88,19 @@ class CartViewSet(viewsets.GenericViewSet):
 
             order.calculate_total()
             cart.clear()
+
+            send_email_task.delay(
+                subject=f"Заказ #{order.id} создан",
+                message=f"Ваш заказ #{order.id} на сумму {order.total_amount} руб. успешно создан.\n\nАдрес доставки: {order.delivery_address}\nГород: {order.delivery_city}\nИндекс: {order.delivery_postal_code}",
+                recipient_list=[request.user.email]
+            )
+
+            # Отправка email администратору
+            send_email_task.delay(
+                subject=f"Новый заказ #{order.id}",
+                message=f"Создан новый заказ #{order.id}\nКлиент: {request.user.email}\nСумма: {order.total_amount} руб.",
+                recipient_list=[settings.ADMIN_EMAIL]
+            )
 
         return Response(OrderSerializer(order).data, status=201)
 
