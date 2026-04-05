@@ -1,0 +1,54 @@
+# .dockerignore - исключаем ненужные файлы из Docker образа
+
+# Виртуальное окружение
+venv/
+env/
+.venv/
+.env/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Базы данных
+*.sqlite3
+*.db
+
+# Логи
+*.log
+logs/
+
+# Статика и медиа
+staticfiles/
+media/
+static/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# Тесты
+tests/
+.coverage
+htmlcov/
+
+# Другое
+*.pyc
+*.pyo
+*.pyd
+*.DS_Store
+*.pid
