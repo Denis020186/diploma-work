@@ -65,48 +65,70 @@ Docker и Docker Compose (опционально)
 Структура проекта:
 
 diploma-work/
-├── apps/                       # Все приложения проекта
-│   ├── users/                  # Пользователи и аутентификация
+
+├── apps/    # Все приложения проекта
+
+│   ├── users/    # Пользователи и аутентификация
+
 │   │   ├── models.py           
 │   │   ├── views.py            
 │   │   ├── serializers.py      
 │   │   ├── urls.py             
 │   │   ├── signals.py          
 │   │   └── apps.py
-│   ├── products/               # Товары и категории
-│   │   ├── models.py           
-│   │   ├── views.py            
-│   │   ├── serializers.py
-│   │   ├── urls.py
-│   │   └── admin.py
-│   ├── orders/                 # Корзина и заказы
-│   │   ├── models.py           
-│   │   ├── views.py            
-│   │   ├── serializers.py
-│   │   ├── urls.py
-│   │   └── admin.py
-│   └── import_export/          # Импорт/экспорт данных
-│       ├── yaml_loader.py      
-│       ├── tasks.py            
-│       └── management/commands/  
-│           └── import_products.py
-├── config/                     # Настройки проекта
+
+│   ├── products/    # Товары и категории
+
+    │   ├── models.py           
+    │   ├── views.py            
+    │   ├── serializers.py
+    │   ├── urls.py
+    │   └── admin.py
+
+│   ├── orders/    # Корзина и заказы
+
+    │   ├── models.py           
+    │   ├── views.py            
+    │   ├── serializers.py
+    │   ├── urls.py
+    │   └── admin.py
+│   └── import_export/    # Импорт/экспорт данных
+
+    │       ├── yaml_loader.py      
+    │       ├── tasks.py            
+    │       └── management/commands/  
+    │           └── import_products.py
+
+├── config/    # Настройки проекта
+
 │   ├── settings.py             
 │   ├── urls.py                 
 │   ├── celery.py               
 │   ├── wsgi.py
+
 │   └── __init__.py
-├── media/                      # Медиа файлы
+
+├── media/    # Медиа файлы
+
 │   └── price_files/            
 │       ├── shop1.yaml
+
 │       └── shop2.yaml
-├── static/                     # Статические файлы
-├── templates/                  # HTML шаблоны
-├── .env.example                # Пример переменных окружения
+
+├── static/    # Статические файлы
+
+├── templates/    # HTML шаблоны
+
+├── .env.example    # Пример переменных окружения
+
 ├── .gitignore
-├── Dockerfile                  # Docker образ
-├── docker-compose.yml          # Docker Compose
-├── requirements.txt            # зависимости
+
+├── Dockerfile    # Docker образ
+
+├── docker-compose.yml    # Docker Compose
+
+├── requirements.txt    # зависимости
+
 └── manage.py
 
 
