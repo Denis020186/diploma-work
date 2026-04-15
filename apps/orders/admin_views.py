@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
 from django.db.models import Q, Sum
-from .models import Order, OrderItem
-from .serializers import OrderSerializer
+from .models import Order, OrderItem, OrderStatus
+from .serializers import OrderSerializer, OrderStatusUpdateSerializer
 from apps.users.permissions import IsAdminOrSupplier
 from apps.import_export.tasks import send_email_task
 
@@ -24,11 +24,17 @@ class AdminOrderViewSet(viewsets.ReadOnlyModelViewSet):
         user = self.request.user
         queryset = Order.objects.select_related('user').prefetch_related('items__supplier_product')
 
-        # Поставщик видит заказы только на свои товары
-        if not user.is_superuser and hasattr(user, 'supplier'):
-            queryset = queryset.filter(
-                items__supplier_product__supplier=user.supplier
-            ).distinct()
+        if not user.is_superuser and (hasattr(user, 'is_supplier') and user.is_supplier):
+            # У пользователя есть связанный профиль поставщика
+            if hasattr(user, 'supplier_profile'):
+                queryset = queryset.filter(
+                    items__supplier_product__supplier=user.supplier_profile
+                ).distinct()
+            # Если есть поле supplier
+            elif hasattr(user, 'supplier'):
+                queryset = queryset.filter(
+                    items__supplier_product__supplier=user.supplier
+                ).distinct()
 
         # Фильтрация по статусу
         status_filter = self.request.query_params.get('status')
@@ -99,10 +105,17 @@ class AdminOrderViewSet(viewsets.ReadOnlyModelViewSet):
 
         if user.is_superuser:
             orders = Order.objects.all()
-        elif hasattr(user, 'supplier'):
-            orders = Order.objects.filter(
-                items__supplier_product__supplier=user.supplier
-            ).distinct()
+        elif hasattr(user, 'is_supplier') and user.is_supplier:
+            if hasattr(user, 'supplier_profile'):
+                orders = Order.objects.filter(
+                    items__supplier_product__supplier=user.supplier_profile
+                ).distinct()
+            elif hasattr(user, 'supplier'):
+                orders = Order.objects.filter(
+                    items__supplier_product__supplier=user.supplier
+                ).distinct()
+            else:
+                return Response({'error': 'Профиль поставщика не найден'}, status=status.HTTP_403_FORBIDDEN)
         else:
             return Response({'error': 'Нет доступа'}, status=status.HTTP_403_FORBIDDEN)
 
@@ -126,3 +139,21 @@ class AdminOrderViewSet(viewsets.ReadOnlyModelViewSet):
             statistics['average_order_amount'] = statistics['total_amount'] / statistics['total_orders']
 
         return Response(statistics)
+
+
+    @action(detail=True, methods=['get'])
+    def status_history(self, request, pk=None):
+        """История статусов заказа"""
+        order = self.get_object()
+        status_history = order.status_history.all().order_by('-created_at')
+
+        data = [{
+            'id': item.id,
+            'status': item.status,
+            'status_display': item.get_status_display(),
+            'comment': item.comment,
+            'created_at': item.created_at,
+            'changed_by': item.changed_by.email if item.changed_by else 'Система'
+        } for item in status_history]
+
+        return Response(data)

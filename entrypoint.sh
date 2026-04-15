@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # entrypoint.sh - скрипт для запуска Django приложения в Docker
 

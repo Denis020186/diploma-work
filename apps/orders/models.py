@@ -176,3 +176,47 @@ class OrderItem(models.Model):
     @property
     def total_price(self) -> Decimal:
         return self.price * self.quantity
+
+
+class OrderStatus(models.Model):
+    """Модель для отслеживания истории статусов заказа."""
+
+    order = models.ForeignKey(
+        Order,
+        on_delete=models.CASCADE,
+        related_name='status_history',
+        verbose_name=_('Заказ')
+    )
+
+    status = models.CharField(
+        max_length=20,
+        choices=Order.STATUS_CHOICES,
+        verbose_name=_('Статус')
+    )
+
+    comment = models.TextField(
+        blank=True,
+        verbose_name=_('Комментарий')
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True,
+        verbose_name=_('Время изменения')
+    )
+
+    changed_by = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='changed_statuses',
+        verbose_name=_('Кто изменил')
+    )
+
+    class Meta:
+        verbose_name = _('История статуса заказа')
+        verbose_name_plural = _('Истории статусов заказов')
+        ordering = ['-created_at']
+
+    def __str__(self) -> str:
+        return f"Заказ #{self.order.id} - {self.get_status_display()} в {self.created_at}"

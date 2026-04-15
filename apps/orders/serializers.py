@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Cart, CartItem, Order, OrderItem
+from .models import Cart, CartItem, Order, OrderItem, OrderStatus
 from apps.products.serializers import SupplierProductSerializer
 import re
 
@@ -61,3 +61,25 @@ class OrderSerializer(serializers.ModelSerializer):
                   'delivery_address', 'delivery_city', 'delivery_postal_code', 'comment',
                   'total_amount', 'items')
         read_only_fields = ('id', 'user', 'created_at', 'updated_at', 'total_amount')
+
+
+class OrderStatusUpdateSerializer(serializers.Serializer):
+    status = serializers.ChoiceField(
+        choices=['pending', 'confirmed', 'shipped', 'delivered', 'cancelled'],
+        help_text="Новый статус заказа"
+    )
+    comment = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        help_text="Комментарий к изменению статуса"
+    )
+
+
+class OrderStatusSerializer(serializers.ModelSerializer):
+    status_display = serializers.CharField(source='get_status_display', read_only=True)
+    changed_by_email = serializers.EmailField(source='changed_by.email', read_only=True)
+
+    class Meta:
+        model = OrderStatus
+        fields = ('id', 'order', 'status', 'status_display', 'comment', 'created_at', 'changed_by', 'changed_by_email')
+        read_only_fields = ('id', 'created_at')
