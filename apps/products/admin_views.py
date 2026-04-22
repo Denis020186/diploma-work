@@ -127,9 +127,9 @@ class AdminProductViewSet(viewsets.ModelViewSet):
         search = self.request.query_params.get('search')
         if search:
             queryset = queryset.filter(
-                models.Q(name__icontains=search) |
-                models.Q(sku__icontains=search) |
-                models.Q(supplier__company_name__icontains=search)
+                Q(name__icontains=search) |
+                Q(sku__icontains=search) |
+                Q(supplier__company_name__icontains=search)
             )
 
         return queryset
